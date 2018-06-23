@@ -6,7 +6,7 @@ const key = require('../model/keys');
 router.get("/", (req, res)=>{
 
     var options = {
-        uri: 'https://4314729d9708f1ac8c8b2e45276db2f8:9b00c21d7c2901c54cf628868e0dc5cb@imaryakids.myshopify.com/admin/products.json',
+        uri: key.shopifyLink,
         headers: {
             'User-Agent': 'Request-Promise'
         },
