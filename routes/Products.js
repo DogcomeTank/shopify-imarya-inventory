@@ -4,23 +4,36 @@ const rp = require('request-promise');
 const key = require('../model/keys');
 
 router.get("/", (req, res)=>{
+    req.session.currentUrl = req.originalUrl;
 
-    var options = {
-        uri: 'https://4314729d9708f1ac8c8b2e45276db2f8:9b00c21d7c2901c54cf628868e0dc5cb@imaryakids.myshopify.com/admin/products.json',
-        headers: {
-            'User-Agent': 'Request-Promise'
-        },
-        json: true // Automatically parses the JSON string in the response
-    };
-     
-    rp(options)
-        .then(function (data) {
-            res.json(data);
-        })
-        .catch(function (err) {
-            // API call failed...
-            res.send('API call failed..');
-    });
+    if(req.user.accessLevel == undefined){
+        res.redirect('/login//google-login');
+    }
+
+    if(req.user.accessLevel == 1){
+        const shopifyAPISelection = 'products.json';
+
+        var options = {
+            uri: key.shopifyLink.productInfo + shopifyAPISelection,
+            headers: {
+                'User-Agent': 'Request-Promise'
+            },
+            json: true // Automatically parses the JSON string in the response
+        };
+         
+        rp(options)
+            .then(function (data) {
+                res.json(data);
+            })
+            .catch(function (err) {
+                // API call failed...
+                res.send('API call failed..');
+        });
+    }else{
+        res.redirect('/login/google-login');
+    }
+
+    
 
 });
 

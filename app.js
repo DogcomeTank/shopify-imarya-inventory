@@ -11,7 +11,7 @@ const bodyParser = require('body-parser');
 const querystring = require('querystring');
 const request = require('request-promise');
 const mongoose = require('mongoose');
-const key = require('./model/keys');
+const keys = require('./model/keys');
 
 
 
@@ -25,7 +25,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(cookieParser());
 app.use(session({
-    secret: 'mySecrete',
+    secret: keys.sessionSecrete.mySecrete,
     resave: false,
     saveUninitialized: false,
     cookie: { secure: false } //only set this to true if you are in HTTPS connection
@@ -37,11 +37,25 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // admin1pass
 
+// connect mongoDB
+mongoose.connect(keys.mongoose.link, { });
+mongoose.Promise = global.Promise
+
+//user authentication local
+const passport = require('passport');
+app.use(passport.initialize());
+app.use(passport.session());
+// app.use(passport.authenticate('remember-me'));
+
 const index = require('./routes/index');
 const Products = require('./routes/Products');
+const qrCode = require('./routes/qrcode');
+const login = require('./routes/login');
 
+app.use('/login', login);
 app.use('/', index);
 app.use('/products', Products);
+app.use('/qrcode', qrCode);
 
 
 
